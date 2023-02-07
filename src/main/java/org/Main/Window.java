@@ -1,5 +1,8 @@
 package org.Main;
 
+import org.Scenes.GameScene;
+import org.Scenes.MenuScene;
+import org.Util.Time;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -7,6 +10,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.security.Key;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -19,15 +23,30 @@ public class Window {
     private int width, height;
     private String title;
     private long glfwWindow;
+    private static Scene currentScene;
     private static Window window = null;
     private Window() {
         this.width = 720;
         this.height = 720;
         this.title = "TetraBlox";
     }
-    public static Window get()
-    {
-        if (Window.window == null) Window.window = new Window();
+    public static void changeScene(int newScene) {
+        switch (newScene) {
+            case 0:
+                currentScene = new MenuScene();
+                break;
+            case 1:
+                currentScene = new GameScene();
+                break;
+            default:
+                assert false : "Unknown Scene " + newScene;
+                break;
+        }
+        currentScene.init();
+    }
+    public static Window get() {
+        if (Window.window == null)
+            Window.window = new Window();
         return Window.window;
     }
 
@@ -49,7 +68,7 @@ public class Window {
     private void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
-        //System.err.println("error init");
+        System.err.println("error init");
         GLFWErrorCallback.createPrint(System.err).set();
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
@@ -66,11 +85,17 @@ public class Window {
         if ( glfwWindow == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
+        //Setup Callbacks
+        glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
+        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
+        glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
+
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(glfwWindow, (window, key, scancode, action, mods) -> {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
-                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-        });
+//        glfwSetKeyCallback(glfwWindow, (window, key, scancode, action, mods) -> {
+//            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+//                glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+//        });
 
         // Get the thread stack and push a new frame
         try ( MemoryStack stack = stackPush() ) {
@@ -93,34 +118,52 @@ public class Window {
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(glfwWindow);
-        // Enable v-sync
-        glfwSwapInterval(1);
+//        // Enable v-sync
+//        glfwSwapInterval(1);
 
         // Make the window visible
         glfwShowWindow(glfwWindow);
+
+        Window.changeScene(0);
     }
 
     private void loop() {
-        // This line is critical for LWJGL's interoperation with GLFW's
-        // OpenGL context, or any context that is managed externally.
-        // LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL
-        // bindings available for use.
+        // This line is critical for LWJGL's interoperation with GLFW's OpenGL context, or any context that is managed externally. LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL bindings available for use.
         GL.createCapabilities();
 
-        // Set the clear color
-        // Run the rendering loop until the user has attempted to close
-        // the window or has pressed the ESCAPE key.
+        //init time variables
+        float beginTime = Time.getTime();
+        float endTime =  Time.getTime();
+        float deltaTime = -1.0f;
+        // Run the rendering loop until the user has attempted to close the window or has pressed the ESCAPE key.
         while ( !glfwWindowShouldClose(glfwWindow) ) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
+            // Poll for window events. The key callback above will only be invoked during this call.
+            glfwPollEvents();
+
+
+
+            //System.out.println(KeyListener.isKeyPressed(GLFW_KEY_SPACE));
+
+            glClearColor(1.0f,1.0f,1.0f,1.0f); // clear the framebuffer
+            glClear(GL_COLOR_BUFFER_BIT);
             //glfwSwapBuffers(glfwWindow); // swap the color buffers
 
-            glClearColor(1.0f,1.0f,1.0f,1.0f);
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents();
+            //glClearColor(1.0f,1.0f,1.0f,1.0f);
+
+            if (deltaTime >= 0)
+            {
+                currentScene.update(deltaTime);
+            }
+
             glfwSwapBuffers(glfwWindow);
+
+
+            //Calculate DeltaTime
+            endTime = Time.getTime();
+            deltaTime = endTime - beginTime;
+            beginTime = endTime;
         }
     }
 }
