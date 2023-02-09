@@ -26,8 +26,8 @@ public class Window {
     private static Scene currentScene;
     private static Window window = null;
     private Window() {
-        this.width = 720;
-        this.height = 720;
+        this.width = 1000;
+        this.height = 600;
         this.title = "TetraBlox";
     }
     public static void changeScene(int newScene) {
@@ -81,7 +81,7 @@ public class Window {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        glfwWindow = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
+        glfwWindow = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
         if ( glfwWindow == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -123,14 +123,15 @@ public class Window {
 
         // Make the window visible
         glfwShowWindow(glfwWindow);
+        // This line is critical for LWJGL's interoperation with GLFW's OpenGL context, or any context that is managed externally. LWJGL detects the context that is current in the current thread,
+        // creates the GLCapabilities instance and makes the OpenGL bindings available for use.
+        GL.createCapabilities();
 
         Window.changeScene(0);
     }
 
     private void loop() {
-        // This line is critical for LWJGL's interoperation with GLFW's OpenGL context, or any context that is managed externally. LWJGL detects the context that is current in the current thread,
-        // creates the GLCapabilities instance and makes the OpenGL bindings available for use.
-        GL.createCapabilities();
+
 
         //init time variables
         float beginTime = Time.getTime();
