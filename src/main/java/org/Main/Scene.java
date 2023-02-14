@@ -1,6 +1,10 @@
 package org.Main;
 
+import org.Renderer.Camera;
+
 public abstract class Scene {
+
+    protected Camera cam;
     public Scene() {
 
     }

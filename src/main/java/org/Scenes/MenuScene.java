@@ -3,7 +3,9 @@ package org.Scenes;
 import org.Main.KeyListener;
 import org.Main.Scene;
 import org.Main.Window;
+import org.Renderer.Camera;
 import org.Renderer.Shader;
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -18,11 +20,11 @@ public class MenuScene extends Scene {
 
     private float[] vertexArray = {
         //pos                                   //col
-        //x    y     z                        r     g    b     a (not working rn)
-        0.5f, -0.5f, 0.0f,                  1.0f, 0.0f, 0.0f, 1.0f, //bottom right 0
-        -0.5f, 0.5f, 0.0f,                  0.0f, 1.0f, 0.0f, 1.0f, //top left 1
-        0.5f, 0.5f, 0.0f,                   0.0f, 0.0f, 1.0f, 1.0f, //top right 2
-        -0.5f, -0.5f, 0.0f,                 0.0f, 1.0f, 1.0f, 0.5f //bottom left 3
+        //x    y     z                        r     g    b     a
+        100.5f, 0.5f, 0.0f,                  1.0f, 0.0f, 0.0f, 1.0f, //bottom right 0
+        0.5f, 100.5f, 0.0f,                  0.0f, 1.0f, 0.0f, 1.0f, //top left 1
+        100.5f, 100.5f, 0.0f,                   0.0f, 0.0f, 1.0f, 1.0f, //top right 2
+        0.5f, 0.5f, 0.0f,                 0.0f, 1.0f, 1.0f, 0.5f //bottom left 3
     };
     //must be counterclockwise
     private int[] elementArray = {
@@ -38,6 +40,7 @@ public class MenuScene extends Scene {
     }
     @Override
     public void init() {
+        this.cam = new Camera(new Vector2f());
         defaultShader = new Shader("assets\\shaders\\default.glsl");
         defaultShader.compileShader();
         // make vao, vbo, ebo
@@ -77,6 +80,9 @@ public class MenuScene extends Scene {
     public void update(float dt) {
         //bind shader program, vao
         defaultShader.use();
+        defaultShader.upload4f("uProj", cam.getProjectionMatrix());
+        defaultShader.upload4f("uView", cam.getViewMatrix());
+
         glBindVertexArray(vaoID);
 
         //enable vertex attrib pointers
