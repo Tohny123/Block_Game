@@ -1,30 +1,32 @@
 package org.Scenes;
 
-import org.Main.KeyListener;
 import org.Main.Scene;
 import org.Main.Window;
 import org.Renderer.Camera;
 import org.Renderer.Shader;
+import org.Renderer.Texture;
+import org.Util.Time;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class MenuScene extends Scene {
-
+    
     private float[] vertexArray = {
         //pos                                   //col
-        //x    y     z                        r     g    b     a
-        100.5f, 0.5f, 0.0f,                  1.0f, 0.0f, 0.0f, 1.0f, //bottom right 0
-        0.5f, 100.5f, 0.0f,                  0.0f, 1.0f, 0.0f, 1.0f, //top left 1
-        100.5f, 100.5f, 0.0f,                   0.0f, 0.0f, 1.0f, 1.0f, //top right 2
-        0.5f, 0.5f, 0.0f,                 0.0f, 1.0f, 1.0f, 0.5f //bottom left 3
+        //x   y     z                     r     g    b     a      UV
+        100f, 0f, 0.0f,                  1.0f, 0.0f, 0.0f, 1.0f,  0, 1, //bottom right 0        1, 0,
+        0f, 100f, 0.0f,                  0.0f, 1.0f, 0.0f, 1.0f,  1, 0, //top left 1            0, 1,
+        100f, 100f, 0.0f,                0.0f, 0.0f, 1.0f, 1.0f,  0, 0, //top right 2           1, 1,
+        0.0f, 0.0f, 0.0f,                0.0f, 1.0f, 1.0f, 0.5f,  1, 1 //bottom left 3         0, 0,
     };
     //must be counterclockwise
     private int[] elementArray = {
@@ -35,6 +37,10 @@ public class MenuScene extends Scene {
     private int vaoID, vboID, eboID;
 
     private Shader defaultShader;
+
+    Texture tempTex;
+
+
     public MenuScene() {
 
     }
@@ -43,6 +49,9 @@ public class MenuScene extends Scene {
         this.cam = new Camera(new Vector2f());
         defaultShader = new Shader("assets\\shaders\\default.glsl");
         defaultShader.compileShader();
+        //TODO:VERY TEMPORARY
+        tempTex = new Texture("assets\\textures\\test texture.png");
+
         // make vao, vbo, ebo
         vaoID = glGenVertexArrays();
         glBindVertexArray(vaoID);
@@ -65,23 +74,44 @@ public class MenuScene extends Scene {
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, elementBuffer, GL_STATIC_DRAW);
 
         //add vertex attribute pointers
-        int posSize = 3;
+        int posXYSize = 3;
         int colorSize = 4;
-        int floatSizeBytes = 4; //the size of a float is always 4 bytes
-        int vertexSizeBytes = (posSize + colorSize) * floatSizeBytes; // used for stride
-        glVertexAttribPointer(0, posSize, GL_FLOAT, false, vertexSizeBytes, 0);
-        //glEnableVertexAttribArray(0);
+        int uvSize = 2;
+        int floatSizeBytes = Float.BYTES; //the size of a float is always 4 bytes
+        int vertexSizeBytes = (posXYSize + colorSize + uvSize) * floatSizeBytes; // used for stride
+        //pos
+        glVertexAttribPointer(0, posXYSize, GL_FLOAT, false, vertexSizeBytes,
+                0);
+        glEnableVertexAttribArray(0);
         //color attribute
-        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeBytes, posSize * floatSizeBytes);
-        //glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeBytes,
+                posXYSize * floatSizeBytes);
+        glEnableVertexAttribArray(1);
+        //UV
+        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSizeBytes,
+                (posXYSize + colorSize) * floatSizeBytes);
+        glEnableVertexAttribArray(2);
     }
 
     @Override
     public void update(float dt) {
         //bind shader program, vao
         defaultShader.use();
-        defaultShader.upload4f("uProj", cam.getProjectionMatrix());
-        defaultShader.upload4f("uView", cam.getViewMatrix());
+
+        //uploading texture
+        defaultShader.uploadTexture("TEX_SAMPLER", 0);
+        glActiveTexture(0);
+        tempTex.bind();
+
+        //glEnable(GL_ALPHA_TEST);
+        //glAlphaFunc(GL_GREATER, 0.1f);
+
+        defaultShader.uploadMat4f("uProj", cam.getProjectionMatrix());
+        defaultShader.uploadMat4f("uView", cam.getViewMatrix());
+        defaultShader.uploadFloat("fTime", Time.getTime());
+
+
+        defaultShader.uploadVec3f("iResolution", new Vector3f(Window.get().width,Window.get().height, 1.0f));
 
         glBindVertexArray(vaoID);
 
@@ -90,8 +120,6 @@ public class MenuScene extends Scene {
         glEnableVertexAttribArray(1);
 
         glDrawElements(GL_TRIANGLES, elementArray.length, GL_UNSIGNED_INT, 0);
-
-
 
         //unbind everything
         glDisableVertexAttribArray(0);

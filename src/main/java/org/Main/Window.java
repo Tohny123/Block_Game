@@ -20,7 +20,8 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
-    private int width, height;
+    //private int width, height;
+    public int width, height;
     private String title;
     private long glfwWindow;
     private static Scene currentScene;
