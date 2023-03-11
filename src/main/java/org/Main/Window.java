@@ -34,10 +34,10 @@ public class Window {
     public static void changeScene(int newScene) {
         switch (newScene) {
             case 0:
-                currentScene = new MenuScene();
+                currentScene = new GameScene();
                 break;
             case 1:
-                currentScene = new GameScene();
+                currentScene = new MenuScene();
                 break;
             default:
                 assert false : "Unknown Scene " + newScene;

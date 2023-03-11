@@ -3,18 +3,34 @@ package org.Scenes;
 import org.Main.KeyListener;
 import org.Main.Scene;
 import org.Main.Window;
+import org.Renderer.Camera;
+import org.Renderer.Shader;
+import org.Renderer.Sprite;
+import org.Renderer.Texture;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
 
+import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class GameScene extends Scene {
+    Sprite test;
+    Vector2f pos, size;
     public GameScene() {
-        System.out.println("gamescene");
-    }
 
+    }
+    public void init() {
+        cam = new Camera(new Vector2f());
+        pos = new Vector2f(10.0f, 1.0f);
+        size = new Vector2f(1.0f, 1.0f);
+        test = new Sprite(new Shader("assets\\shaders\\default.glsl"), new Texture("assets\\textures\\test texture.png"), cam);
+    }
     @Override
     public void update(float dt) {
+        pos.x += dt * 10;
+        test.draw(dt, pos, size, 45.0f, new Color(1,2,3,1));
     }
 }
