@@ -88,6 +88,11 @@ vec4 starLayer(vec2 p, float time)
 
 void main()
 {
+    //transparency
+    vec4 texColor = texture(TEX_SAMPLER, fTexUV);
+    if(texColor.a < 0.1)
+    discard;
+
     float time = fTime / (iResolution.x / 1000.0);
 
     // first layer of the kaliset fractal

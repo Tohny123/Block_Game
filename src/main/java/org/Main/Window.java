@@ -146,7 +146,7 @@ public class Window {
 
 
 
-            //System.out.println(KeyListener.isKeyPressed(GLFW_KEY_SPACE));
+           // System.out.println(KeyListener.isKeyPressed(GLFW_KEY_SPACE));
 
             glClearColor(1.0f,1.0f,1.0f,1.0f); // clear the framebuffer
             glClear(GL_COLOR_BUFFER_BIT);

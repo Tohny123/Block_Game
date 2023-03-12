@@ -24,16 +24,16 @@ public class KeyListener {
             get().keyPressed[key] = false;
     }
     public static boolean isKeyPressed(int keycode) {
-        //System.out.println("test");
-//        if (keycode < get().keyPressed.length)
-//            return get().keyPressed[keycode];
-//        else
-//        {
-//            System.err.println("INVALID KEYCODE: " + keycode);
-//            return false;
-//        }
+        System.out.println("test");
+        if (keycode < get().keyPressed.length)
+            return get().keyPressed[keycode];
+        else
+        {
+            System.err.println("INVALID KEYCODE: " + keycode);
+            return false;
+        }
         //TODO:catch potential invalid keycode
-        return get().keyPressed[keycode];
+        //return get().keyPressed[keycode];
     }
 }
 

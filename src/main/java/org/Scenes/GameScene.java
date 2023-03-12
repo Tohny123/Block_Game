@@ -17,7 +17,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class GameScene extends Scene {
-    Sprite test;
+    Sprite test, test2;
     Vector2f pos, size;
     public GameScene() {
 
@@ -26,11 +26,24 @@ public class GameScene extends Scene {
         cam = new Camera(new Vector2f());
         pos = new Vector2f(10.0f, 1.0f);
         size = new Vector2f(1.0f, 1.0f);
-        test = new Sprite(new Shader("assets\\shaders\\default.glsl"), new Texture("assets\\textures\\test texture.png"), cam);
+        test = new Sprite(new Shader("assets\\shaders\\stars.glsl"), new Texture("assets\\textures\\test texture.png"), cam);
+        test2 = new Sprite(new Shader("assets\\shaders\\stars.glsl"), new Texture("assets\\textures\\test texture.png"), cam);
     }
     @Override
     public void update(float dt) {
-        pos.x += dt * 10;
-        test.draw(dt, pos, size, 45.0f, new Color(1,2,3,1));
+        //pos.x += dt * 10;
+        Shader s = new Shader("assets\\shaders\\stars.glsl");
+        //s.compileShader();
+        if (KeyListener.isKeyPressed(GLFW_KEY_D)) {
+            pos.x += dt * 100;
+        }
+        if (KeyListener.isKeyPressed(GLFW_KEY_A)) {
+            pos.x -= dt * 100;
+        }
+       // if(pos.x > 50) test2.Shader = s;
+                //new Shader("assets\\shaders\\stars.glsl");
+        System.out.println(pos.x);
+        test2.draw(dt, pos, size, 45.0f, new Color(1,2,3,1));
+        //test.draw(dt, new Vector2f(1f, 1f), size, 0.0f, new Color(1,2,3,1));
     }
 }

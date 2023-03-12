@@ -57,7 +57,7 @@ public class Shader {
             ioe.printStackTrace();
             System.err.println("IO EXCEPTION" + ioe);
         }
-
+    compileShader();
 
 //        System.out.println(vertexShaderSrc);
 //        System.out.println(fragmentShaderSrc);

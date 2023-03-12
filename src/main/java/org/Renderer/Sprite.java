@@ -35,9 +35,9 @@ public class Sprite {
             1, 3, 0 //bottom left tri
 
     };
-    Texture texture;
-    Shader Shader;
-    Camera cam;
+    public Texture texture;
+    public Shader Shader;
+    public Camera cam;
     int vaoID, vboID, eboID;
     public Sprite(Shader s, Texture t, Camera c) {
         //this.cam = new Camera(new Vector2f());
@@ -46,7 +46,7 @@ public class Sprite {
 //        //TODO:VERY TEMPORARY
 //        texture = new Texture("assets\\textures\\test texture.png");
         Shader = s;
-        Shader.compileShader();
+        //Shader.compileShader();
         texture = t;
         cam = c;
 
@@ -114,6 +114,7 @@ public class Sprite {
         Shader.uploadMat4f("uView", cam.getViewMatrix());
         Shader.uploadFloat("fTime", Time.getTime());
         Shader.uploadMat4f("model", model);
+        Shader.uploadVec3f("maskColor", new Vector3f(1.0f,0.0f,1.0f));
         Shader.uploadVec3f("iResolution", new Vector3f(Window.get().width,Window.get().height, 1.0f));
 
         glBindVertexArray(vaoID);
