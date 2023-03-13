@@ -25,7 +25,7 @@ public class GameScene extends Scene {
     public void init() {
         cam = new Camera(new Vector2f());
         pos = new Vector2f(10.0f, 1.0f);
-        size = new Vector2f(10.0f, 10.0f);
+        size = new Vector2f(0.7f, 0.7f);
 
         test = new Sprite(new Shader("assets\\shaders\\default.glsl"), new Texture("assets\\textures\\Piece\\block_empty.png"), cam);
         test1 = new Sprite(new Shader("assets\\shaders\\default.glsl"), new Texture("assets\\textures\\test texture.png"), cam);
@@ -34,7 +34,7 @@ public class GameScene extends Scene {
     }
     @Override
     public void update(float dt) {
-        //pos.x += dt * 10;ddddd
+        //pos.x += dt * 10;
         Shader s = new Shader("assets\\shaders\\stars.glsl");
         //s.compileShader();
         if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
@@ -47,7 +47,16 @@ public class GameScene extends Scene {
             test3 = test2;
         }
 
-
+        for (int i = 0; i < 20; i++)
+        {
+            for (int j = 0; j < 10; j++) {
+                test3.draw(dt, pos, size, 0.0f, Color.black);
+                pos.x += size.x * 10;
+            }
+            pos.x = 10;
+            pos.y += size.y * 10;
+        }
+        pos = new Vector2f(10.0f, 1.0f);
 
       //  System.out.println(pos.x);
         test3.draw(dt, pos, size, 0.0f, Color.MAGENTA);
