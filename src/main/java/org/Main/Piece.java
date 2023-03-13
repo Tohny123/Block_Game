@@ -18,5 +18,9 @@ public class Piece {
         type = t;
 
     }
+    public Piece() {
+        super();
+        type = Type.EMPTY;
+    }
     public String toString(){return type.name();}
 }
