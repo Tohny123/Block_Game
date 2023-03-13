@@ -1,4 +1,4 @@
-    package org.Renderer;
+    package org.Compnents.Renderer;
 
     import org.lwjgl.BufferUtils;
 
@@ -49,6 +49,7 @@
                 System.err.println("ERROR IMAGE TEXTURE" + filepath);
             }
             //frees memory used in line 34
+            assert image != null;
             stbi_image_free(image);
         }
 

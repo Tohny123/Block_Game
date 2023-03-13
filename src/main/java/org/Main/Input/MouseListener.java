@@ -1,4 +1,4 @@
-package org.Main;
+package org.Main.Input;
 
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;

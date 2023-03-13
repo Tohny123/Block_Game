@@ -1,11 +1,11 @@
-package org.Renderer;
+package org.Compnents.Renderer;
 
 import org.Main.Window;
 import org.Util.Time;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
 import java.awt.*;
@@ -22,12 +22,12 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Sprite {
     private float[] vertexArray = {
-            //pos                                   //col
+            //pos                                   //col temporary only for shader stuff
             //x   y     z                     r     g    b     a      UV
-            100f, 0f, 0.0f,                  1.0f, 0.0f, 0.0f, 1.0f,  0, 1, //bottom right 0        1, 0,
-            0f, 100f, 0.0f,                  0.0f, 1.0f, 0.0f, 1.0f,  1, 0, //top left 1            0, 1,
-            100f, 100f, 0.0f,                0.0f, 0.0f, 1.0f, 1.0f,  0, 0, //top right 2           1, 1,
-            0.0f, 0.0f, 0.0f,                0.0f, 1.0f, 1.0f, 0.5f,  1, 1 //bottom left 3         0, 0,
+            10f, 0f, 0.0f,                  1.0f, 0.0f, 0.0f, 1.0f,  1, 1, //bottom right 0        1, 0,
+            0f, 10f, 0.0f,                  0.0f, 1.0f, 0.0f, 1.0f,  0, 0, //top left 1            0, 1,
+            10f, 10f, 0.0f,                0.0f, 0.0f, 1.0f, 1.0f,  1, 0, //top right 2           1, 1,
+            0.0f, 0.0f, 0.0f,                0.0f, 1.0f, 1.0f, 0.5f,  0, 1 //bottom left 3         0, 0,
     };
     //must be counterclockwise
     private int[] elementArray = {
@@ -36,7 +36,7 @@ public class Sprite {
 
     };
     public Texture texture;
-    public Shader Shader;
+    public org.Compnents.Renderer.Shader Shader;
     public Camera cam;
     int vaoID, vboID, eboID;
     public Sprite(Shader s, Texture t, Camera c) {
@@ -91,9 +91,6 @@ public class Sprite {
                 (posXYSize + colorSize) * floatSizeBytes);
         glEnableVertexAttribArray(2);
     }
-    public void init() {
-
-    }
     public void draw(float dt, Vector2f pos, Vector2f size, float rotate, Color col) {
         //use shader
         Shader.use();
@@ -113,9 +110,14 @@ public class Sprite {
         Shader.uploadMat4f("uProj", cam.getProjectionMatrix());
         Shader.uploadMat4f("uView", cam.getViewMatrix());
         Shader.uploadFloat("fTime", Time.getTime());
-        Shader.uploadMat4f("model", model);
-        Shader.uploadVec3f("maskColor", new Vector3f(1.0f,0.0f,1.0f));
         Shader.uploadVec3f("iResolution", new Vector3f(Window.get().width,Window.get().height, 1.0f));
+        Shader.uploadMat4f("model", model);
+        //color
+        float[] colArr = new float[4];
+        col.getColorComponents(colArr);
+        Shader.uploadVec4f("spriteCol", new Vector4f(colArr));
+        //transparency
+        Shader.uploadVec3f("maskColor", new Vector3f(1.0f,0.0f,1.0f));
 
         glBindVertexArray(vaoID);
 

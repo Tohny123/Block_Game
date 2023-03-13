@@ -1,6 +1,6 @@
-package org.Main;
+package org.Compnents;
 
-import org.Renderer.Camera;
+import org.Compnents.Renderer.Camera;
 
 public abstract class Scene {
 

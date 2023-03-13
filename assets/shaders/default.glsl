@@ -23,7 +23,6 @@ void main() {
 #type fragment
 #version 440
 in vec4 fColor;
-
 const int MAX_ITER = 18;
 uniform vec3 iResolution;
 uniform sampler2D TEX_SAMPLER;
@@ -37,6 +36,7 @@ uniform float fTime;
 
 void main() {
 
-    color = sin(fTime * 2) + fColor + texture(TEX_SAMPLER, fTexUV);
+    //color = sin(fTime * 2) + fColor + texture(TEX_SAMPLER, fTexUV);
+    color = texture(TEX_SAMPLER, fTexUV);
 }
 

@@ -41,6 +41,7 @@ void main() {
 const int MAX_ITER = 18;
 uniform vec3 iResolution;
 uniform float fTime;
+uniform vec4 spriteCol;
 uniform sampler2D TEX_SAMPLER;
 in vec4 fColor;
 out vec4 color;
@@ -132,5 +133,5 @@ void main()
 
     const float brightness = 1.0;
     vec4 colour = mix(freqs[3] - 0.3, 1.0, v) * vec4(1.5 * freqs[2] * t * t * t, 1.2 * freqs[1] * t * t, freqs[3] * t, 1.0) + starColour;
-    color = vec4(brightness * colour.xyz, 1.0);
+    color = vec4(brightness * colour.xyz, 1.0) + spriteCol;
 }

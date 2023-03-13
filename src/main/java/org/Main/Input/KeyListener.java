@@ -1,10 +1,10 @@
-package org.Main;
+package org.Main.Input;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class KeyListener {
     private static KeyListener keyInst;
-    private boolean keyPressed[] = new boolean[GLFW_KEY_LAST];
+    private boolean[] keyPressed = new boolean[GLFW_KEY_LAST];
     private KeyListener()
     {
 
@@ -24,7 +24,7 @@ public class KeyListener {
             get().keyPressed[key] = false;
     }
     public static boolean isKeyPressed(int keycode) {
-        System.out.println("test");
+        //System.out.println("test");
         if (keycode < get().keyPressed.length)
             return get().keyPressed[keycode];
         else

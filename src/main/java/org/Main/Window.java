@@ -1,5 +1,8 @@
 package org.Main;
 
+import org.Compnents.Scene;
+import org.Main.Input.KeyListener;
+import org.Main.Input.MouseListener;
 import org.Scenes.GameScene;
 import org.Scenes.MenuScene;
 import org.Util.Time;
@@ -10,12 +13,10 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
-import java.security.Key;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 

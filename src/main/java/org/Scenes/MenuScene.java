@@ -1,10 +1,10 @@
 package org.Scenes;
 
-import org.Main.Scene;
+import org.Compnents.Scene;
 import org.Main.Window;
-import org.Renderer.Camera;
-import org.Renderer.Shader;
-import org.Renderer.Texture;
+import org.Compnents.Renderer.Camera;
+import org.Compnents.Renderer.Shader;
+import org.Compnents.Renderer.Texture;
 import org.Util.Time;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
