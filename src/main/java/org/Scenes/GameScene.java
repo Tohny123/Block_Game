@@ -1,5 +1,6 @@
 package org.Scenes;
 
+import org.Compnents.Type;
 import org.Main.Input.KeyListener;
 import org.Compnents.Piece;
 import org.Compnents.Scene;
@@ -15,7 +16,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class GameScene extends Scene {
     Sprite test, test1,  test2, test3;
-    Vector2f pos, size;
+    Vector2f pos, posStore, size;
     //maybe make board its own class
     Piece[][] board = new Piece[20][10];
     Piece[][] buffer = new Piece[20][10];
@@ -24,13 +25,25 @@ public class GameScene extends Scene {
     }
     public void init() {
         cam = new Camera(new Vector2f());
-        pos = new Vector2f(10.0f, 1.0f);
-        size = new Vector2f(0.7f, 0.7f);
+        pos = new Vector2f(12.0f, 4.0f);
+        size = new Vector2f(0.8f, 0.8f);
 
-        test = new Sprite(new Shader("assets\\shaders\\default.glsl"), new Texture("assets\\textures\\Piece\\block_empty.png"), cam);
-        test1 = new Sprite(new Shader("assets\\shaders\\default.glsl"), new Texture("assets\\textures\\test texture.png"), cam);
-        test2 = new Sprite(new Shader("assets\\shaders\\default.glsl"), new Texture("assets\\textures\\Piece\\block_high_res.png"), cam);
+        test = new Sprite(new Shader("assets\\shaders\\default.glsl"),
+                new Texture("assets\\textures\\Piece\\block_empty.png"), cam, Color.BLACK);
+        test1 = new Sprite(new Shader("assets\\shaders\\default.glsl"),
+                new Texture("assets\\textures\\test texture.png"), cam, Color.BLACK);
+        test2 = new Sprite(new Shader("assets\\shaders\\default.glsl"),
+                new Texture("assets\\textures\\Piece\\block_high_res.png"), cam, Color.BLUE);
         test3 = test2;
+
+        posStore = new Vector2f(pos);
+        for (int i = 0; i < 20; i++)
+        {
+            for (int j = 0; j < 10; j++) {
+                board[i][j] = new Piece();
+                board[i][j].setType(Type.EMPTY);
+            }
+        }
     }
     @Override
     public void update(float dt) {
@@ -47,19 +60,21 @@ public class GameScene extends Scene {
             test3 = test2;
         }
 
+        posStore = new Vector2f(pos);
         for (int i = 0; i < 20; i++)
         {
             for (int j = 0; j < 10; j++) {
-                test3.draw(dt, pos, size, 0.0f, Color.black);
-                pos.x += size.x * 10;
+                test3.draw(dt, posStore, size, 0.0f);
+
+                posStore.x += size.x * 10;
             }
-            pos.x = 10;
-            pos.y += size.y * 10;
+            posStore.x = pos.x;
+            posStore.y += size.y * 10;
         }
-        pos = new Vector2f(10.0f, 1.0f);
+        posStore = pos;
 
       //  System.out.println(pos.x);
-        test3.draw(dt, pos, size, 0.0f, Color.MAGENTA);
+        test3.draw(dt, pos, size, 0.0f);
         //test.draw(dt, new Vector2f(1f, 1f), size, 0.0f, new Color(1,2,3,1));
 
 

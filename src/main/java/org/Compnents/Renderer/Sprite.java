@@ -38,8 +38,9 @@ public class Sprite {
     public Texture texture;
     public org.Compnents.Renderer.Shader Shader;
     public Camera cam;
+    public Color color;
     int vaoID, vboID, eboID;
-    public Sprite(Shader s, Texture t, Camera c) {
+    public Sprite(Shader s, Texture t, Camera c, Color col) {
         //this.cam = new Camera(new Vector2f());
 //        defaultShader = new Shader("assets\\shaders\\default.glsl");
 //        defaultShader.compileShader();
@@ -49,7 +50,7 @@ public class Sprite {
         //Shader.compileShader();
         texture = t;
         cam = c;
-
+        color = col;
 
         // make vao, vbo, ebo
         vaoID = glGenVertexArrays();
@@ -91,7 +92,7 @@ public class Sprite {
                 (posXYSize + colorSize) * floatSizeBytes);
         glEnableVertexAttribArray(2);
     }
-    public void draw(float dt, Vector2f pos, Vector2f size, float rotate, Color col) {
+    public void draw(float dt, Vector2f pos, Vector2f size, float rotate) {
         //use shader
         Shader.use();
 
@@ -114,7 +115,7 @@ public class Sprite {
         Shader.uploadMat4f("model", model);
         //color
         float[] colArr = new float[4];
-        col.getColorComponents(colArr);
+        color.getColorComponents(colArr);
         Shader.uploadVec4f("spriteCol", new Vector4f(colArr));
         //transparency
         Shader.uploadVec3f("maskColor", new Vector3f(1.0f,0.0f,1.0f));
