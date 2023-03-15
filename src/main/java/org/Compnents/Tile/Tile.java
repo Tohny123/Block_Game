@@ -1,10 +1,21 @@
 package org.Compnents.Tile;
 
+import org.joml.Matrix2f;
+
 import java.awt.*;
 
 public class Tile {
     TileType type;
     public Color col;
+    Matrix2f clockwise = new Matrix2f(
+            0.0f, 1.0f,
+            -1.0f, 0.0f
+    );
+    Matrix2f counterClockwise = new Matrix2f(
+            0.0f, -1.0f,
+            1.0f, 0.0f
+    );
+
     public boolean isFilled = false;
     public Tile() {
         setType(TileType.EMPTY);

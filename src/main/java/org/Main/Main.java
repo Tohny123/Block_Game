@@ -18,6 +18,7 @@ public class Main {
     //https://www.youtube.com/watch?v=liJac6RysE4
     //https://www.youtube.com/watch?v=vnqb9vdaxwA
     //https://learnopengl.com/Getting-started/Transformations
+    //https://www.youtube.com/watch?v=yIpk5TJ_uaI
 
     //https://www.shadertoy.com/view/4dSBDt could be bg shader
     //https://www.shadertoy.com/view/NslGRN less laggy

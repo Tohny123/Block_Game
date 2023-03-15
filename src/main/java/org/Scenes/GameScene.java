@@ -28,7 +28,7 @@ public class GameScene extends Scene {
     }
     public void init() {
         cam = new Camera(new Vector2f());
-        pos = new Vector2f(100.0f, 15.0f);
+        pos = new Vector2f(100.0f, 19.0f);
         size = new Vector2f(2.8f, 2.8f);
         emptyTex = new Texture("assets\\textures\\Piece\\block_empty.png");
         fullTex = new Texture("assets\\textures\\Piece\\block_high_res.png");
