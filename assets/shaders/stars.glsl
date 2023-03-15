@@ -36,6 +36,7 @@ void main() {
 
 // By Jared Berghold 2022 (https://www.jaredberghold.com/)
 // Based on the "Simplicity Galaxy" shader by CBS (https://www.shadertoy.com/view/MslGWN)
+// LEAKS MEMORY
 // The nebula effect is based on the kaliset fractal (https://softologyblog.wordpress.com/2011/05/04/kalisets-and-hybrid-ducks/)
 
 const int MAX_ITER = 18;

@@ -92,7 +92,7 @@ public class Sprite {
                 (posXYSize + colorSize) * floatSizeBytes);
         glEnableVertexAttribArray(2);
     }
-    public void draw(float dt, Vector2f pos, Vector2f size, float rotate) {
+    public void draw(Vector2f pos, Vector2f size, float rotate) {
         //use shader
         Shader.use();
 

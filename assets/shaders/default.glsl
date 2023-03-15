@@ -25,6 +25,7 @@ void main() {
 in vec4 fColor;
 const int MAX_ITER = 18;
 uniform vec3 iResolution;
+uniform vec4 spriteCol;
 uniform sampler2D TEX_SAMPLER;
 //in vec4 fColor;
 //out vec4 color;
@@ -37,6 +38,6 @@ uniform float fTime;
 void main() {
 
     //color = sin(fTime * 2) + fColor + texture(TEX_SAMPLER, fTexUV);
-    color = texture(TEX_SAMPLER, fTexUV);
+    color = spriteCol * texture(TEX_SAMPLER, fTexUV);
 }
 

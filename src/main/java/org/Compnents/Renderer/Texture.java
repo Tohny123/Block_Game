@@ -2,6 +2,7 @@
 
     import org.lwjgl.BufferUtils;
 
+    import java.awt.*;
     import java.nio.ByteBuffer;
     import java.nio.IntBuffer;
 
@@ -13,6 +14,7 @@
     public class Texture {
         private String filepath;
         private int texID;
+        public int width, height;
 
         public Texture(String fp) {
             this.filepath = fp;
@@ -27,19 +29,20 @@
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            IntBuffer width = BufferUtils.createIntBuffer(1);
-            IntBuffer height = BufferUtils.createIntBuffer(1);
+            IntBuffer w = BufferUtils.createIntBuffer(1);
+            IntBuffer h = BufferUtils.createIntBuffer(1);
             IntBuffer channels = BufferUtils.createIntBuffer(1);
             //load image into bytebuffer using stbi
-            ByteBuffer image = stbi_load(this.filepath, width, height, channels, 0);
-
+            ByteBuffer image = stbi_load(this.filepath, w, h, channels, 0);
+            width = w.get(0);
+            height = h.get(0);
             if(image != null){
                 if(channels.get(0) == 3) {
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width.get(0), height.get(0), 0,
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w.get(0), h.get(0), 0,
                             GL_RGB, GL_UNSIGNED_BYTE, image);
                 }
                 else {
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.get(0), height.get(0), 0,
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w.get(0), h.get(0), 0,
                             GL_RGBA, GL_UNSIGNED_BYTE, image);
                 }
 

@@ -2,6 +2,7 @@ package org.Compnents;
 
 import org.Compnents.Renderer.Camera;
 
+
 public abstract class Scene {
 
     protected Camera cam;

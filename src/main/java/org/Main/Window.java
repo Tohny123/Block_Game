@@ -22,14 +22,14 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
     //private int width, height;
-    public int width, height;
+    public static int width, height;
     private String title;
     private long glfwWindow;
     private static Scene currentScene;
     private static Window window = null;
     private Window() {
-        this.width = 1000;
-        this.height = 600;
+        width = 1000;
+        height = 600;
         this.title = "TetraBlox";
     }
     public static void changeScene(int newScene) {
@@ -120,8 +120,8 @@ public class Window {
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(glfwWindow);
-//        // Enable v-sync
-//        glfwSwapInterval(1);
+        // Enable v-sync
+        // glfwSwapInterval(1);
 
         // Make the window visible
         glfwShowWindow(glfwWindow);
@@ -135,7 +135,7 @@ public class Window {
     private void loop() {
 
 
-        //init time variables
+        //calc deltatime
         float beginTime = Time.getTime();
         float endTime =  Time.getTime();
         float deltaTime = -1.0f;
