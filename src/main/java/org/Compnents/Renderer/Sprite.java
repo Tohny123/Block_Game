@@ -44,7 +44,6 @@ public class Sprite {
         //this.cam = new Camera(new Vector2f());
 //        defaultShader = new Shader("assets\\shaders\\default.glsl");
 //        defaultShader.compileShader();
-//        //TODO:VERY TEMPORARY
 //        texture = new Texture("assets\\textures\\test texture.png");
         Shader = s;
         //Shader.compileShader();

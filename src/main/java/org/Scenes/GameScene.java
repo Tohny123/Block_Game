@@ -1,5 +1,6 @@
 package org.Scenes;
 
+import org.Compnents.Piece;
 import org.Compnents.Tile.Tile;
 import org.Compnents.Tile.TileType;
 import org.Main.Input.KeyListener;
@@ -20,9 +21,12 @@ public class GameScene extends Scene {
     Sprite drawTile;
     Vector2f pos, posStore, size;
     //maybe make board its own class
-    Tile[][] board = new Tile[20][10];
-    Tile[][] buffer = new Tile[board.length][board[0].length];
+    public static Tile[][] board = new Tile[20][10];
+    public static Tile[][] buffer = new Tile[board.length][board[0].length];
     Texture emptyTex, fullTex;
+    Piece currentPiece;
+    float time = 0.1f;
+    float i = time;
     public GameScene() {
 
     }
@@ -51,6 +55,7 @@ public class GameScene extends Scene {
                 buffer[i][j] = new Tile();
             }
         }
+        currentPiece = new Piece();
     }
     @Override
     public void update(float dt) {
@@ -61,9 +66,20 @@ public class GameScene extends Scene {
         //test.draw(new Vector2f(0f,0f), new Vector2f((float )Window.width / emptyTex.width, (float) Window.height / emptyTex.width),0.0f);
         test.draw(new Vector2f(0f,0f), new Vector2f(Window.width,Window.height),0.0f);
 
-        board[2][3].setType(TileType.T);
-        drawBoard();
+        //board[2][3].setType(TileType.T);
+        //System.out.println(i);
+        boolean b = true;
+        if(i > 0) i -= dt;
+        if(i < 0) {
+            b = currentPiece.moveDown();
+            i = time;
+        }
+        if(!b) {
+            i = time;
+            currentPiece = new Piece();
+        }
 
+        drawBoard();
     }
 
 

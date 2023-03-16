@@ -45,7 +45,6 @@ public class MenuScene extends Scene {
             this.cam = new Camera(new Vector2f());
 //        defaultShader = new Shader("assets\\shaders\\stars.glsl");
 //        defaultShader.compileShader();
-//        //TODO:VERY TEMPORARY
 //        tempTex = new Texture("assets\\textures\\test texture.png");
 //
 //        // make vao, vbo, ebo

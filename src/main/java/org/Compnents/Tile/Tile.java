@@ -7,6 +7,7 @@ import java.awt.*;
 public class Tile {
     TileType type;
     public Color col;
+    boolean hasGhost = false;
     Matrix2f clockwise = new Matrix2f(
             0.0f, 1.0f,
             -1.0f, 0.0f
@@ -19,6 +20,9 @@ public class Tile {
     public boolean isFilled = false;
     public Tile() {
         setType(TileType.EMPTY);
+    }
+    public TileType getType() {
+        return type;
     }
     public void setType(TileType t) {
 

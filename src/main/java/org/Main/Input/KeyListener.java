@@ -32,8 +32,6 @@ public class KeyListener {
             System.err.println("INVALID KEYCODE: " + keycode);
             return false;
         }
-        //TODO:catch potential invalid keycode
-        //return get().keyPressed[keycode];
     }
 }
 
