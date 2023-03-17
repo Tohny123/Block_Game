@@ -2,7 +2,6 @@ package org.Scenes;
 
 import org.Compnents.Piece;
 import org.Compnents.Tile.Tile;
-import org.Compnents.Tile.TileType;
 import org.Main.Input.KeyListener;
 import org.Compnents.Scene;
 import org.Main.Window;
@@ -19,14 +18,15 @@ import static org.lwjgl.glfw.GLFW.*;
 public class GameScene extends Scene {
     Sprite test, test1,  test2;
     Sprite drawTile;
+    float ARR = 0.001f;
+    float ARRLeft = 0;
     Vector2f pos, posStore, size;
-    //maybe make board its own class
-    public static Tile[][] board = new Tile[20][10];
+    public static Tile[][] board = new Tile[20][10]; // X IS VERTICAL DIRECTION, Y IS HORIZONTAL,
     public static Tile[][] buffer = new Tile[board.length][board[0].length];
     Texture emptyTex, fullTex;
     Piece currentPiece;
-    float time = 0.1f;
-    float i = time;
+    float time = 0.5f;
+    float timeLeft = time;
     public GameScene() {
 
     }
@@ -39,10 +39,11 @@ public class GameScene extends Scene {
 
         test = new Sprite(new Shader("assets\\shaders\\stars.glsl"),
                 new Texture("assets\\textures\\Piece\\block_empty.png"), cam, Color.BLACK);
-        test1 = new Sprite(new Shader("assets\\shaders\\default.glsl"),
+        test1 = new Sprite(new Shader("assets\\shaders\\stars.glsl"),
                 new Texture("assets\\textures\\test texture.png"), cam, Color.BLACK);
         test2 = new Sprite(new Shader("assets\\shaders\\default.glsl"),
                 new Texture("assets\\textures\\Piece\\block_high_res.png"), cam, Color.BLUE);
+
 
         drawTile = new Sprite(new Shader("assets\\shaders\\default.glsl"),
                 new Texture("assets\\textures\\Piece\\block_empty.png"), cam, Color.BLACK);
@@ -59,6 +60,7 @@ public class GameScene extends Scene {
     }
     @Override
     public void update(float dt) {
+        //System.out.println(1 / dt);
         //pos.x += dt * 10;
         //Shader s = new Shader("assets\\shaders\\stars.glsl");
         //s.compileShader();
@@ -66,20 +68,49 @@ public class GameScene extends Scene {
         //test.draw(new Vector2f(0f,0f), new Vector2f((float )Window.width / emptyTex.width, (float) Window.height / emptyTex.width),0.0f);
         test.draw(new Vector2f(0f,0f), new Vector2f(Window.width,Window.height),0.0f);
 
+
         //board[2][3].setType(TileType.T);
-        //System.out.println(i);
-        boolean b = true;
-        if(i > 0) i -= dt;
-        if(i < 0) {
-            b = currentPiece.moveDown();
-            i = time;
+        //System.out.println(timeLeft);
+
+
+        if (KeyListener.isKeyPressed(GLFW_KEY_RIGHT)) {
+            if(ARRLeft > 0) {
+                ARRLeft -= dt;
+            }
+            else {
+                ARRLeft = ARR;
+                currentPiece.moveDir(1);
+            }
+        } else if (KeyListener.isKeyPressed(GLFW_KEY_LEFT)) {
+            if(ARRLeft > 0) {
+                ARRLeft -= dt;
+            }
+            else {
+                ARRLeft = ARR;
+                currentPiece.moveDir(-1);
+            }
+        } else {
+            ARRLeft = 0;
         }
-        if(!b) {
-            i = time;
+
+
+        boolean canMove = true;
+        if(timeLeft > 0) timeLeft -= dt;
+        if(timeLeft < 0) {
+            canMove = currentPiece.moveDown();
+            timeLeft = time;
+        }
+        if(!canMove && currentPiece.coordX == 19) {
+            System.out.println("win");
+        }
+        if(!canMove) {
+            timeLeft = time;
             currentPiece = new Piece();
         }
 
+
         drawBoard();
+
     }
 
 
@@ -107,6 +138,7 @@ public class GameScene extends Scene {
     }
 
     private void debug() {
+        test1.draw(new Vector2f(2,2), new Vector2f(50,50), ARRLeft * 100);
         if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
             drawTile = test;
         }
