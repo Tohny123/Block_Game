@@ -7,17 +7,13 @@ import java.awt.*;
 public class Tile {
     TileType type;
     public Color col;
-    boolean hasGhost = false;
-    Matrix2f clockwise = new Matrix2f(
-            0.0f, 1.0f,
-            -1.0f, 0.0f
-    );
-    Matrix2f counterClockwise = new Matrix2f(
-            0.0f, -1.0f,
-            1.0f, 0.0f
-    );
 
-    public boolean isFilled = false;
+    boolean hasGhost = false;
+
+    boolean isActive = false;
+
+
+    boolean isFilled = false;
     public Tile() {
         setType(TileType.EMPTY);
     }
@@ -25,7 +21,6 @@ public class Tile {
         return type;
     }
     public void setType(TileType t) {
-
         type = t;
         isFilled = type != TileType.EMPTY;
         switch (t) {
@@ -40,5 +35,29 @@ public class Tile {
             case null, default -> col = Color.MAGENTA;
         }
     }
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public boolean hasGhost() {
+        return hasGhost;
+    }
+
+    public void setHasGhost(boolean hasGhost) {
+        this.hasGhost = hasGhost;
+    }
+
+    public boolean isFilled() {
+        return isFilled;
+    }
+
+    public void setFilled(boolean filled) {
+        isFilled = filled;
+    }
+
     public String toString(){return type.name();}
 }
