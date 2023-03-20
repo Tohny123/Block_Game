@@ -117,13 +117,14 @@ public class GameScene extends Scene {
     private void movePieceDown(float dt) {
         boolean canMove = true;
         if(timeLeft > 0) timeLeft -= dt;
-        if(KeyListener.isKeyPressed(GLFW_KEY_DOWN)) timeLeft = -1;
+        //if(KeyListener.isKeyPressed(GLFW_KEY_DOWN)) timeLeft = -1;
         if(timeLeft < 0) {
             canMove = currentPiece.moveDown();
-            if(KeyListener.isKeyPressed(GLFW_KEY_DOWN)) timeLeft = time/5;
+            if(KeyListener.isKeyPressed(GLFW_KEY_DOWN)) timeLeft = time;
             else timeLeft = time;
         }
-        if(!canMove && currentPiece.coordX == 19) {
+        if(!canMove && currentPiece.coordX == 20) {
+            System.out.println("cleared");
             clearBoard();
         }
         if(!canMove) {
@@ -150,22 +151,8 @@ public class GameScene extends Scene {
                 currentPiece.moveDir(1);
             }
 
-//            if(DASLeft > 0 && !hasMoved) {
-//                hasMoved = true;
-//                currentPiece.moveDir(1);
-//            } else if (DASLeft > 0 )DASLeft -= dt;
-//            else if(ARRLeft > 0) ARRLeft -= dt;
-//            else {
-//                ARRLeft = ARR;
-//                currentPiece.moveDir(1);
-//            }
+
         } else if (KeyListener.isKeyPressed(GLFW_KEY_LEFT)) {
-//            if(DASLeft > 0) DASLeft -= dt;
-//            else if(ARRLeft > 0) ARRLeft -= dt;
-//            else {
-//                ARRLeft = ARR;
-//                currentPiece.moveDir(-1);
-//            }
             if(!hasMoved)
             {
                 hasMoved = true;
