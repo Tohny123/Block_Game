@@ -28,12 +28,13 @@ public class GameScene extends Scene {
     Texture emptyTex, fullTex;
     Piece currentPiece;
     float time = 0.5f;
-    float graceTime = 0.01f;
+    float graceTime = 0.9f;
     float graceTimeLeft;
     float timeLeft = time;
     boolean hasRotated = false;
     boolean hasPlaced = false;
     boolean hasMoved = false;
+    boolean canMove = true;
 
     public GameScene() {
 
@@ -73,31 +74,26 @@ public class GameScene extends Scene {
         //debug();
         background.draw(new Vector2f(0f,0f), new Vector2f(Window.width,Window.height),0.0f);
 
+        debug();
 
         rotatePiece();
 
         hardDropPiece();
 
+        //if (KeyListener.isKeyPressed(GLFW_KEY_J))
+
         movePieceDown(dt);
 
         movePieceLR(dt);
 
-        checkRow();
+
+       // System.out.println(graceTimeLeft);
 
         drawBoard();
 
     }
 
 
-    private void hardDropPiece() {
-        if(KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
-            if(!hasPlaced) {
-                currentPiece.hardDrop();
-                hasPlaced = true;
-                placePiece();
-            }
-        } else hasPlaced = false;
-    }
 
     private void rotatePiece() {
         if (KeyListener.isKeyPressed(GLFW_KEY_UP)) {
@@ -114,26 +110,43 @@ public class GameScene extends Scene {
         } else hasRotated = false;
     }
 
+    private void hardDropPiece() {
+        if(KeyListener.isKeyPressed(GLFW_KEY_SPACE)) {
+            if(!hasPlaced) {
+                currentPiece.hardDrop();
+                hasPlaced = true;
+                placePiece();
+            }
+        } else hasPlaced = false;
+    }
+
+
     private void movePieceDown(float dt) {
-        boolean canMove = true;
         if(timeLeft > 0) timeLeft -= dt;
         if(KeyListener.isKeyPressed(GLFW_KEY_DOWN)) timeLeft = -1;
         if(timeLeft < 0) {
             canMove = currentPiece.moveDown();
             if(KeyListener.isKeyPressed(GLFW_KEY_DOWN)) timeLeft = time/5;
             else timeLeft = time;
-        }
-        if(!canMove && currentPiece.coordX == 19) {
-            clearBoard();
+            //System.out.println(canMove);
         }
         if(!canMove) {
             timeLeft = time;
+            if(!currentPiece.doesCollideX(-1)) {
+                canMove = true;
+                graceTimeLeft = graceTime;
+                return;
+            }
             if(graceTimeLeft > 0) graceTimeLeft -= dt;
             else {
                 graceTimeLeft = graceTime;
                 placePiece();
             }
         }
+    }
+    public void checkLose() {
+        if (currentPiece.coordX >= 19)
+            clearBoard();
     }
 
     private void movePieceLR(float dt) {
@@ -184,7 +197,10 @@ public class GameScene extends Scene {
     }
 
     private void placePiece() {
-        currentPiece.placePiece();
+        checkLose();
+        canMove = true;
+        graceTimeLeft = graceTime;
+        checkRows(currentPiece.placePiece());
         currentPiece = new Piece();
     }
 
@@ -220,23 +236,39 @@ public class GameScene extends Scene {
         }
         posStore = pos;
     }
-    private void checkRow() {
-        for (int i = 0; i < board.length; i++) {
-            int count = 0;
-            for (Tile t : board[i]) {
-                if (t.isFilled()) count++;
+    private void checkRows(int[] placedRows) {
+        int max = placedRows[1];
+        for (int i = placedRows[0]; i <= max; i++) {
+            if(checkRow(i)) {
+                i--;
+                max--;
             }
-            if (count >= 10) clearRow(i);
         }
     }
-//TODO: CLEAR ROW IS FUCKED
+    private boolean checkRow(int row) {
+        int count = 0;
+        for (Tile t : board[row]) {
+            if(t.isFilled()) count++;
+        }
+        if (count >= 10) {
+            clearRow(row);
+            return true;
+        }
+        return false;
+    }
     private void clearRow(int clearedRow) {
-
         for (int i = clearedRow ; i < board.length - 1; i++) {
             board[i] = board[i + 1].clone();
         }
-        for (Tile t : board[board.length -1]) {
-            t.setType(TileType.EMPTY);
+        clearBuffer();
+    }
+
+
+    private void clearBuffer() {
+        for (int i = 20; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                board[i][j] = new Tile();
+            }
         }
     }
 
@@ -253,28 +285,22 @@ public class GameScene extends Scene {
 
 
     private void debug() {
-        test1.draw(new Vector2f(2,2), new Vector2f(50,50), ARRLeft * 100);
-        if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
-            drawTile = background;
-        }
-        if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
-            drawTile = test1;
-        }
-        if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
-            drawTile = test2;
-        }
-        if(KeyListener.isKeyPressed(GLFW_KEY_P)) {
-            Window.changeScene(1);
-        }
+//        test1.draw(new Vector2f(2,2), new Vector2f(50,50), ARRLeft * 100);
+//        if (KeyListener.isKeyPressed(GLFW_KEY_Q)) {
+//            drawTile = background;
+//        }
+//        if (KeyListener.isKeyPressed(GLFW_KEY_W)) {
+//            drawTile = test1;
+//        }
+//        if (KeyListener.isKeyPressed(GLFW_KEY_E)) {
+//            drawTile = test2;
+//        }
+//        if(KeyListener.isKeyPressed(GLFW_KEY_P)) {
+//            Window.changeScene(1);
+//        }
         if (KeyListener.isKeyPressed(GLFW_KEY_L))
         {
-            board = new Tile[board.length][board[0].length];
-            for (int i = 0; i < board.length; i++)
-            {
-                for (int j = 0; j < board[i].length; j++) {
-                    board[i][j] = new Tile();
-                }
-            }
+            clearBoard();
         }
     }
     public void checkRotation() {

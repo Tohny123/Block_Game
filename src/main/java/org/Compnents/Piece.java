@@ -14,13 +14,14 @@ public class Piece {
     TileType currentType;
     public Vector2i JLSZT_offset, I_offset, O_offset;
     int[] bound;
-    int rotIndex;
+    int rotIndex = 0;
     int oldX, oldY;
     public int coordX, coordY;// dispCoord for center
     int[][] dispCoord = new int[4][2]; // coord displacement x horizontal y vertical
     int[][] oldDisp;
     int ghostX;
     int oldGhostX;
+    int[][][] offset = new int[5][4][2]; //1st value: test count 2nd value: rotation index: 3rd value: offsets
 
     public Piece() {
         //TODO:check if first tile is obscured
@@ -67,10 +68,10 @@ public class Piece {
                 dispCoord[3] = new int[]{1, 0};
             }
             case I -> {
-                dispCoord[0] = new int[]{-2, 0};
-                dispCoord[1] = new int[]{-1, 0};
-                dispCoord[2] = new int[]{0, 0};
-                dispCoord[3] = new int[]{1, 0};
+                dispCoord[0] = new int[]{1, 0};
+                dispCoord[1] = new int[]{0, 0};
+                dispCoord[2] = new int[]{-1, 0};
+                dispCoord[3] = new int[]{-2, 0};
             }
             case O -> {
                 dispCoord[0] = new int[]{1, 0};
@@ -82,6 +83,7 @@ public class Piece {
                 break;
             }
         }
+
 
         oldDisp = dispCoord.clone();
         for (int i = 0; i < dispCoord.length; i++) {
@@ -142,19 +144,15 @@ public class Piece {
     }
     public void rotate(boolean isCCW) {
         if(currentType == TileType.O) return;
+        if(currentType == TileType.I) {
+            rotateI(isCCW);
+            return;
+        }
         if(isCCW){
-            for (int[] arr: dispCoord){
-                int temp = arr[0];
-                arr[0] = -arr[1];
-                arr[1] = temp;
-            }
+            doRot(-1);
         }
         else {
-            for (int[] arr: dispCoord){
-                int temp = arr[0];
-                arr[0] = arr[1];
-                arr[1] = -temp;
-            }
+            doRot(1);
         }
         boolean isCollide = false;
         for (int[] coord : dispCoord) {
@@ -163,8 +161,76 @@ public class Piece {
                 break;
             }
         }
-        if(isCollide) dispCoord = oldDisp.clone();
+        if(isCollide) {
+            System.out.println("err");
+            dispCoord = oldDisp.clone();
+        } else {
+            if(isCCW) {
+                if(rotIndex - 1 < 0) rotIndex = 3;
+                else rotIndex--;
+            } else {
+                if(rotIndex + 1 > 3) rotIndex = 0;
+                else rotIndex++;
+            }
+        }
+        //System.out.println(rotIndex);
         updateLoc();
+    }
+    private void rotateI(boolean isCCW) {
+        int offsetX = 0; //horizontal
+        int offsetY = 0; //vertical
+        if (isCCW) {
+            switch (rotIndex) {
+                case 0 -> offsetX = -1;
+                case 1 -> offsetY = 1;
+                case 2 -> offsetX = 1;
+                case 3 -> offsetY = -1;
+            }
+            doRot(-1);
+
+        } else {
+            switch (rotIndex) {
+                case 0 -> offsetY = -1;
+                case 1 -> offsetX = -1;
+                case 2 -> offsetY = 1;
+                case 3 -> offsetX = 1;
+            }
+           // System.out.println(rotIndex);
+
+            doRot(1);
+        }
+        int[] offset = new int[] {offsetX, offsetY};
+        boolean isCollide = false;
+        for (int[] coord : dispCoord) {
+            if(rotCollide(coord, offset)) {
+                isCollide = true;
+                break;
+            }
+        }
+        if(isCollide) {
+            System.out.println("err");
+            dispCoord = oldDisp.clone();
+        } else {
+            if(isCCW) {
+                if(rotIndex - 1 < 0) rotIndex = 3;
+                else rotIndex--;
+            } else {
+                if(rotIndex + 1 > 3) rotIndex = 0;
+                else rotIndex++;
+            }
+            coordX += offsetY; //i know intellij
+            coordY += offsetX;
+        }
+        //System.out.println(rotIndex);
+        updateLoc();
+    }
+
+    public void doRot(int ccw) {
+        for (int[] arr: dispCoord){
+            int temp = arr[0];
+            arr[0] = arr[1] * ccw;
+            arr[1] = temp * -ccw;
+        }
     }
     public boolean rotCollide(int[] arr) {
         int xPos = coordX + arr[1];
@@ -173,6 +239,14 @@ public class Piece {
         Tile t = GameScene.board[xPos][yPos];
         return (t.getType() != TileType.EMPTY && !t.isActive());
         //return (xPos < 0 || yPos < 0 || xPos >= 10 || yPos >= 10);
+    }
+    public boolean rotCollide(int[] arr, int[] offset) {
+        int xPos = coordX + arr[1] + offset[1];
+        int yPos = coordY + arr[0] + offset[0];
+        if(xPos < 0 || yPos < 0 || xPos >= GameScene.board.length || yPos >= 10) return true;
+        Tile t = GameScene.board[xPos][yPos];
+        //t.setHasGhost(true);
+        return (t.getType() != TileType.EMPTY && !t.isActive());
     }
 
     public void hardDrop() {
@@ -184,11 +258,19 @@ public class Piece {
         updateLoc();
     }
 
-    public void placePiece() {
+    public int[] placePiece() {
+        int lowest = 100;
+        int highest = -1;
         for (int[] arr : dispCoord) {
+            if(coordX + arr[1] > highest) highest = coordX + arr[1];
+            if(coordX + arr[1] < lowest) lowest = coordX + arr[1];
+            System.out.println(coordX + arr[1]);
             Tile t = GameScene.board[coordX + arr[1]][coordY + arr[0]];
             t.setActive(false);
+
         }
+        System.out.println(lowest + " " + highest);
+        return new int[]{lowest, highest};
     }
 
     public void updateLoc() {
