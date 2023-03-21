@@ -181,6 +181,7 @@ public class GameScene extends Scene {
 //            }
             if(!hasMoved)
             {
+
                 hasMoved = true;
                 currentPiece.moveDir(-1);
             } else if (DASLeft > 0) DASLeft -= dt;

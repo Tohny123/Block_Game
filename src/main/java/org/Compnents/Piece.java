@@ -146,7 +146,7 @@ public class Piece {
         if(currentType == TileType.O) return;
         if(currentType == TileType.I) {
             rotateI(isCCW);
-            return;
+
         }
         if(isCCW){
             doRot(-1);
