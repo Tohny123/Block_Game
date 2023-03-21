@@ -146,7 +146,7 @@ public class Piece {
         if(currentType == TileType.O) return;
         if(currentType == TileType.I) {
             rotateI(isCCW);
-
+            return;
         }
         if(isCCW){
             doRot(-1);
@@ -154,14 +154,8 @@ public class Piece {
         else {
             doRot(1);
         }
-        boolean isCollide = false;
-        for (int[] coord : dispCoord) {
-            if(rotCollide(coord)) {
-                isCollide = true;
-                break;
-            }
-        }
-        if(isCollide) {
+        boolean col = isCollide();
+        if(col) {
             System.out.println("err");
             dispCoord = oldDisp.clone();
         } else {
@@ -176,6 +170,18 @@ public class Piece {
         //System.out.println(rotIndex);
         updateLoc();
     }
+
+    private boolean isCollide() {
+        boolean isCollide = false;
+        for (int[] coord : dispCoord) {
+            if(rotCollide(coord)) {
+                isCollide = true;
+                break;
+            }
+        }
+        return isCollide;
+    }
+
     private void rotateI(boolean isCCW) {
         int offsetX = 0; //horizontal
         int offsetY = 0; //vertical
@@ -200,14 +206,8 @@ public class Piece {
             doRot(1);
         }
         int[] offset = new int[] {offsetX, offsetY};
-        boolean isCollide = false;
-        for (int[] coord : dispCoord) {
-            if(rotCollide(coord, offset)) {
-                isCollide = true;
-                break;
-            }
-        }
-        if(isCollide) {
+        boolean col = isCollide();
+        if(col) {
             System.out.println("err");
             dispCoord = oldDisp.clone();
         } else {
