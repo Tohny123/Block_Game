@@ -38,6 +38,9 @@ uniform float fTime;
 void main() {
 
     //color = sin(fTime * 2) + fColor + texture(TEX_SAMPLER, fTexUV);
-    color = spriteCol * texture(TEX_SAMPLER, fTexUV);
+    //color = texColor * spriteCol;
+    //color = spriteCol * texture(TEX_SAMPLER, fTexUV);
+    vec4 texture = texture(TEX_SAMPLER, fTexUV);
+    color = vec4(spriteCol.x * texture.x, spriteCol.y * texture.y, spriteCol.z * texture.z, texture.w);
 }
 

@@ -13,17 +13,20 @@ import org.Compnents.Renderer.Texture;
 import org.joml.Vector2f;
 
 import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
 public class GameScene extends Scene {
-    Sprite background, test1,  test2;
+    Vector2f pos, posStore, size;
+    Sprite background;
+    //Sprite test1,  test2;
     Sprite drawTile;
     float ARR = 0.001f;
     float ARRLeft = 0;
     float DAS = 0.2f;
     float DASLeft;
-    Vector2f pos, posStore, size;
     public static Tile[][] board = new Tile[30][10]; // X IS VERTICAL DIRECTION, Y IS HORIZONTAL,
     Texture emptyTex, fullTex;
     Piece currentPiece;
@@ -35,14 +38,19 @@ public class GameScene extends Scene {
     boolean hasPlaced = false;
     boolean hasMoved = false;
     boolean canMove = true;
+    boolean hasHeld = false;
+
+    TileType currentType;
+    TileType holdType = TileType.EMPTY;
+    TileType[] queue;
 
     public GameScene() {
 
     }
     public void init() {
         cam = new Camera(new Vector2f());
-        pos = new Vector2f(350.0f, 19.0f);
         size = new Vector2f(2.8f, 2.8f);
+        pos = new Vector2f((1000 - (2.8f * 100)) / 2, 19.0f);
         emptyTex = new Texture("assets\\textures\\Piece\\block_empty.png");
         fullTex = new Texture("assets\\textures\\Piece\\block_high_res.png");
         DASLeft = DAS;
@@ -52,8 +60,8 @@ public class GameScene extends Scene {
                 new Texture("assets\\textures\\Piece\\block_empty.png"), cam, Color.BLACK);
 //        test1 = new Sprite(new Shader("assets\\shaders\\stars.glsl"),
 //                new Texture("assets\\textures\\background texture.png"), cam, Color.BLACK);
-//        test2 = new Sprite(new Shader("assets\\shaders\\default.glsl"),
-//                new Texture("assets\\textures\\Piece\\block_high_res.png"), cam, Color.BLUE);
+     //   test2 = new Sprite(new Shader("assets\\shaders\\stars.glsl"),
+        //        new Texture("assets\\textures\\test texture.png"), cam, Color.BLUE);
 
 
         drawTile = new Sprite(new Shader("assets\\shaders\\default.glsl"),
@@ -66,7 +74,8 @@ public class GameScene extends Scene {
                 board[i][j] = new Tile();
             }
         }
-        currentPiece = new Piece();
+        currentType = randomizePiece();
+        currentPiece = new Piece(currentType);
     }
     @Override
     public void update(float dt) {
@@ -86,10 +95,28 @@ public class GameScene extends Scene {
 
         movePieceLR(dt);
 
-
        // System.out.println(graceTimeLeft);
 
+
         drawBoard();
+
+        if(KeyListener.isKeyPressed(GLFW_KEY_C) && !hasHeld) {
+            if(holdType == TileType.EMPTY) {
+                holdType = currentType;
+                currentPiece.deletePiece();
+                currentPiece = new Piece(randomizePiece());
+            } else {
+                TileType temp = currentType;
+                currentPiece.deletePiece();
+                currentPiece = new Piece(holdType);
+                currentType = holdType;
+                holdType = temp;
+
+            }
+            hasHeld = true;
+        }
+
+        drawPiece(new Vector2f(200,500), holdType);
 
     }
 
@@ -101,7 +128,7 @@ public class GameScene extends Scene {
                 currentPiece.rotate(false);
                 hasRotated = true;
             }
-        }  else if (KeyListener.isKeyPressed(GLFW_KEY_C))
+        }  else if (KeyListener.isKeyPressed(GLFW_KEY_X))
         {
             if(!hasRotated) {
                 currentPiece.rotate(true);
@@ -201,8 +228,9 @@ public class GameScene extends Scene {
         checkLose();
         canMove = true;
         graceTimeLeft = graceTime;
+        hasHeld = false;
         checkRows(currentPiece.placePiece());
-        currentPiece = new Piece();
+        currentPiece = new Piece(randomizePiece());
     }
 
     private void drawBoard() {
@@ -211,8 +239,7 @@ public class GameScene extends Scene {
         for (int i = 0; i < 20; i++) {
             for (Tile tile : board[i]) {
 
-                if(tile.hasGhost()) drawTile.color = Color.PINK;
-
+               // if(tile.hasGhost()) drawTile.color = Color.PINK;
                 if (tile.isFilled()) {
                     drawTile.color = tile.col;
 
@@ -224,7 +251,7 @@ public class GameScene extends Scene {
                 } else {
                     drawTile.color = Color.WHITE;
 
-                    if (tile.hasGhost()) drawTile.color = Color.PINK;
+                    if (tile.hasGhost()) drawTile.color = Color.GRAY;
 
                     drawTile.texture = emptyTex;
                     drawTile.draw(posStore, size, 0.0f);
@@ -237,6 +264,73 @@ public class GameScene extends Scene {
         }
         posStore = pos;
     }
+    public void drawPiece(Vector2f pos, TileType t) {
+        if (t == TileType.EMPTY) return;
+        int[][] dispCoord = new int[4][2];
+        float move = size.x * 10;
+        Color c = null;
+        switch (t) {
+            case T -> {
+                dispCoord[0] = new int[]{0, 1};
+                dispCoord[1] = new int[]{-1, 0};
+                dispCoord[2] = new int[]{0, 0};
+                dispCoord[3] = new int[]{1, 0};
+                c = new Color(160, 0, 255);
+            }
+            case S -> {
+                dispCoord[0] = new int[]{1, 1};
+                dispCoord[1] = new int[]{0, 1};
+                dispCoord[2] = new int[]{0, 0};
+                dispCoord[3] = new int[]{-1, 0};
+                c = Color.red;
+            }
+            case Z -> {
+                dispCoord[0] = new int[]{-1, 1};
+                dispCoord[1] = new int[]{0, 1};
+                dispCoord[2] = new int[]{0, 0};
+                dispCoord[3] = new int[]{1, 0};
+                c = Color.green;
+            }
+            case L -> {
+                dispCoord[0] = new int[]{1, 1};
+                dispCoord[1] = new int[]{1, 0};
+                dispCoord[2] = new int[]{0, 0};
+                dispCoord[3] = new int[]{-1, 0};
+                c = new Color(255, 100, 0);
+            }
+            case J -> {
+                dispCoord[0] = new int[]{-1, 1};
+                dispCoord[1] = new int[]{-1, 0};
+                dispCoord[2] = new int[]{0, 0};
+                dispCoord[3] = new int[]{1, 0};
+                c = Color.blue;
+            }
+            case I -> {
+                dispCoord[0] = new int[]{1, 0};
+                dispCoord[1] = new int[]{0, 0};
+                dispCoord[2] = new int[]{-1, 0};
+                dispCoord[3] = new int[]{-2, 0};
+                c = Color.CYAN;
+            }
+            case O -> {
+                dispCoord[0] = new int[]{1, 0};
+                dispCoord[1] = new int[]{1, 1};
+                dispCoord[2] = new int[]{0, 1};
+                dispCoord[3] = new int[]{0, 0};
+                c = Color.YELLOW;
+            }
+            case default -> {
+
+            }
+        }
+        drawTile.color = c;
+        drawTile.texture = fullTex;
+        for (int[] disp : dispCoord) {
+            drawTile.draw(new Vector2f(pos.x + (move * disp[0]), pos.y + (move * disp[1])),
+                    size, 0.0f);
+        }
+    }
+
     private void checkRows(int[] placedRows) {
         int max = placedRows[1];
         for (int i = placedRows[0]; i <= max; i++) {
@@ -274,7 +368,7 @@ public class GameScene extends Scene {
     }
 
     private void clearBoard() {
-        currentPiece = new Piece();
+        currentPiece = new Piece(randomizePiece());
         board = new Tile[board.length][board[0].length];
         for (int i = 0; i < board.length; i++)
         {
@@ -282,6 +376,14 @@ public class GameScene extends Scene {
                 board[i][j] = new Tile();
             }
         }
+        holdType = TileType.EMPTY;
+    }
+    public TileType randomizePiece() {
+        ArrayList<TileType> arr = new ArrayList<>(List.of(TileType.values()));
+        arr.remove(0);
+        TileType t = arr.get((int)(Math.random() * arr.size()));
+        currentType = t;
+        return t;
     }
 
 
@@ -304,7 +406,5 @@ public class GameScene extends Scene {
             clearBoard();
         }
     }
-    public void checkRotation() {
 
-    }
 }
