@@ -1,6 +1,7 @@
     package org.Compnents.Renderer;
 
     import org.lwjgl.BufferUtils;
+    import org.lwjgl.system.MemoryUtil;
 
     import java.awt.*;
     import java.nio.ByteBuffer;
@@ -45,7 +46,6 @@
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w.get(0), h.get(0), 0,
                             GL_RGBA, GL_UNSIGNED_BYTE, image);
                 }
-
             }
             else
             {
@@ -54,6 +54,32 @@
             //frees memory used in line 34
             assert image != null;
             stbi_image_free(image);
+        }
+        public Texture (int w, int h, ByteBuffer buffer) {
+            width = w;
+            height = h;
+            texID = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, texID);
+
+            //Set Texture params
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            //stretching and shrinking image
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            if(buffer != null){
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+                            GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+            }
+            else
+            {
+                System.err.println("ERROR IMAGE TEXTURE" + filepath);
+            }
+            //frees memory used in line 34
+            assert buffer != null;
+            MemoryUtil.memFree(buffer);
+            //stbi_image_free(buffer);
         }
 
         public void bind() {

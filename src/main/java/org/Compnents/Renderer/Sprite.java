@@ -11,6 +11,7 @@ import org.lwjgl.BufferUtils;
 import java.awt.*;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Vector;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
@@ -21,6 +22,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Sprite {
+
     private float[] vertexArray = {
             //pos                                   //col temporary only for shader stuff
             //x   y     z                     r     g    b     a      UV
@@ -107,6 +109,48 @@ public class Sprite {
         texture.bind();
 
         //uploading uniforms 
+        Shader.uploadMat4f("uProj", cam.getProjectionMatrix());
+        Shader.uploadMat4f("uView", cam.getViewMatrix());
+        Shader.uploadFloat("fTime", Time.getTime());
+        Shader.uploadVec3f("iResolution", new Vector3f(Window.get().width,Window.get().height, 1.0f));
+        Shader.uploadMat4f("model", model);
+        //color
+        float[] colArr = new float[4];
+        color.getColorComponents(colArr);
+        Shader.uploadVec4f("spriteCol", new Vector4f(colArr));
+        //transparency
+        Shader.uploadVec3f("maskColor", new Vector3f(1.0f,0.0f,1.0f));
+
+        glBindVertexArray(vaoID);
+
+        //enable vertex attrib pointers
+        glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+
+        glDrawElements(GL_TRIANGLES, elementArray.length, GL_UNSIGNED_INT, 0);
+
+        //unbind everything
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glBindVertexArray(0);
+        Shader.detach();
+
+    }
+    public void draw(Vector2f pos, Vector2f size, Vector2f bottomLeft, Vector2f topRight) {
+        //use shader
+        Shader.use();
+
+        Matrix4f model = new Matrix4f();
+        model.translate(new Vector3f(pos, 1.0f));
+        model.scale(new Vector3f(size, 1.0f));
+        // System.out.println(model);
+
+        //texture uploading
+        Shader.uploadTexture("TEX_SAMPLER", 0);
+        glActiveTexture(0);
+        texture.bind();
+
+        //uploading uniforms
         Shader.uploadMat4f("uProj", cam.getProjectionMatrix());
         Shader.uploadMat4f("uView", cam.getViewMatrix());
         Shader.uploadFloat("fTime", Time.getTime());

@@ -268,12 +268,12 @@ public class Piece {
         for (int[] arr : dispCoord) {
             if(coordX + arr[1] > highest) highest = coordX + arr[1];
             if(coordX + arr[1] < lowest) lowest = coordX + arr[1];
-            System.out.println(coordX + arr[1]);
+            //System.out.println(coordX + arr[1]);
             Tile t = GameScene.board[coordX + arr[1]][coordY + arr[0]];
             t.setActive(false);
 
         }
-        System.out.println(lowest + " " + highest);
+       // System.out.println(lowest + " " + highest);
         return new int[]{lowest, highest};
     }
     public void deletePiece() {
@@ -347,4 +347,8 @@ public class Piece {
 //        updateLoc();
 //    }
 
+    @Override
+    public String toString() {
+        return currentType.toString();
+    }
 }
